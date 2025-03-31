@@ -4,9 +4,8 @@ declare(strict_types=1);
 use Dotenv\Dotenv;
 
 try {
-    require_once dirname(__DIR__).'/App/Config/Core.php';
     require_once dirname(__DIR__).'/vendor/autoload.php';
-
+    require_once dirname(__DIR__).'/App/Config/Core.php';
 
 
     /**
@@ -17,10 +16,20 @@ try {
     $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
     $dotenv->load();
 
-    $env = $_ENV['APP_ENV'] ?: 'production';
-
-    echo $env;
+    $app = new \App\Core\Engine\Application();
+    $app->start();
 
 } catch (Exception $e) {
-    echo $e->getMessage();
+    if (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+
+    sendJsonErrorResponse(500, 'Internal Server Error', [
+        'exceptionMessage' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ]);
+
+    exit;
 }
