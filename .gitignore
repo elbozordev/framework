@@ -1,4 +1,5 @@
 .idea/
-.assets/
+/assets
+/vendor
 /.env
 /composer.lock
